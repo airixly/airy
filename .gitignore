@@ -1,0 +1,14 @@
+#jetbrains#
+.idea/
+*.iml
+
+#MAC OS#
+.DS_Store
+
+#vim#
+*.swp
+*.bak
+
+#dependencies#
+/vendor
+/node_modules
