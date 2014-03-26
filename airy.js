@@ -125,6 +125,7 @@
             child.prototype = new F();
             return child;
         },
+        // Extend a given object with the properties in passed-in objects.
         extend: function (obj) {
             slice.call(arguments, 1).forEach(function (source) {
                 if (source) {
@@ -167,14 +168,18 @@
             url += encodeURIComponent(name) + "=" + encodeURIComponent(value);
             return url;
         },
+        // Create the Cross-XHR object.
         createCORSRequest: function (method, url) {
             var xhr = new XMLHttpRequest();
             if ("withCredentials" in xhr) {
+                // XHR for Chrome/Firefox/Opera/Safari.
                 xhr.open(method, url, true);
             } else if (typeof XDomainRequest != "undefined") {
+                // XDomainRequest for IE.
                 xhr = new XDomainRequest();
                 xhr.open(method, url);
             } else {
+                // CORS not supported.
                 xhr = null;
             }
             return xhr;
@@ -235,11 +240,6 @@
         },
         isNativeJson: function () {
             return window.JSON && toString.call(JSON) === "[oabject JSON]";
-        },
-        isHostMethod: function (object, property) {
-            //test for the existence of a function on any object
-            var t = typeof object[property];
-            return t == "function" || (!!(t == "object" && object[property])) || t == "unknow";
         }
     };
 

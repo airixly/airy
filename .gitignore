@@ -10,5 +10,8 @@
 *.bak
 
 #dependencies#
-/vendor
-/node_modules
+vendor/
+node_modules/
+
+#test#
+test/
