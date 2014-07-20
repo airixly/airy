@@ -63,38 +63,6 @@
                 //no longer in popular use
                 element["on" + type] = null;
             }
-        },
-
-        //IE event object exists as a property of the 'window' object
-        //when event handler is assigned using DOM LEVEL 0 and attachEvent
-        //in DOM LEVEL 0,the event will be undefined,so window.event is returned
-        getEvent: function (event) {
-            return event ? event : window.event;
-        },
-
-        //IE event use 'srcElement' to show the target of the event
-        getTarget: function (event) {
-            return event.target || event.srcElement;
-        },
-
-        //cancel the default behavior for the event
-        //as a link is to navigate to the URL with 'href' attribute when clicked
-        preventDefault: function (event) {
-            if (event.preventDefault) {
-                event.preventDefault();
-            } else {
-                //for IE
-                event.returnValue = false;
-            }
-        },
-        stopPropagation: function (event) {
-            //stop any further event capturing or event bubbling
-            if (event.stopPropagation) {
-                event.stopPropagation();
-            } else {
-                //for IE,stop any further event bubbling
-                event.cancelBubble = true;
-            }
         }
     };
 
@@ -228,182 +196,6 @@
         }
     };
 
-    var Type = Airy.Type = {
-        isArray: function (value) {
-            return toString.call(value) === "[object Array]";
-        },
-        isFunction: function (value) {
-            return toString.call(value) === "[object Function]";
-        },
-        isRegExp: function (value) {
-            return toString.call(value) === "[object RegExp]";
-        },
-        isNativeJson: function () {
-            return window.JSON && toString.call(JSON) === "[oabject JSON]";
-        }
-    };
-
-    var Client = Airy.Client = {
-        get: function (request) {
-            var engine = {
-                ie: 0,
-                gecko: 0,
-                webkit: 0,
-                khtml: 0,
-                opera: 0,
-                //complete version
-                ver: null
-            };
-
-            var browser = {
-                ie: 0,
-                firfox: 0,
-                safari: 0,
-                chrome: 0,
-                opera: 0,
-                konq: 0,
-                //specific version
-                ver: null
-            };
-
-            var system = {
-                //platform
-                win: false,
-                mac: false,
-                x11: false,
-                //mobile devices
-                iphone: false,
-                ipod: false,
-                ipad: false,
-                ios: false,
-                android: false,
-                nokiaN: false,
-                winMobile: false,
-                //game systems
-                wii: false,
-                ps: false
-            };
-            var ua;
-            if (typeof navigator === "undefined") {
-                if (request && Type.isArray(request.headers)) {
-                    ua = request.headers["user-agent"];
-                }
-                if (typeof ua === "undefined") {
-                    return "unknown";
-                }
-            } else {
-                ua = navigator.userAgent;
-            }
-            //detect rendering engines/browers
-            if (window.opera) {
-                engine.ver = browser.ver = window.opera.version();
-                engine.opera = browser.opera = parseFloat(engine.ver);
-            } else if (/AppleWebKit\/(\S+)/.test(ua)) {
-                engine.ver = RegExp["$1"];
-                engine.webkit = parseFloat(engine.ver);
-                if (/Chrome\/(\S+)/.test(ua)) {
-                    browser.ver = RegExp["$1"];
-                    browser.chrome = parseFloat(browser.ver);
-                } else if (/Version\/(\S+)/.test(ua)) {
-                    browser.ver = RegExp["$1"];
-                    browser.safari = parseFloat(browser.ver);
-                } else {
-                    var safariVersion = 1;
-                    if (engine.webkit < 100) {
-                        safariVersion = 1;
-                    } else if (engine.webkit < 312) {
-                        safariVersion = 1.2;
-                    } else if (engine.webkit < 412) {
-                        safariVersion = 1.3;
-                    } else {
-                        safariVersion = 2;
-                    }
-                    browser.safari = browser.ver = safariVersion;
-                }
-            } else if (/KHTML\/(\S+)/.test(ua) || /Kongqueror\/([^;]+)/.test(ua)) {
-                engine.ver = browser.ver = RegExp["$1"];
-                engine.khtml = browser.konq = parseFloat(engine.ver);
-            } else if (/rv:([^\)]+)\) Gecko\/\d{8}/.test(ua)) {
-                engine.ver = RegExp["$1"];
-                browser.firefox = parseFloat(browser.ver);
-
-                if (/Firefox\/(\S+)/.test(ua)) {
-                    engine.ver = browser.ver = RegExp["$1"];
-                    engine.ie = browser.ie = parseFloat(engine.ver);
-                }
-            } else if (/MSIE([^;]+)/.test(ua)) {
-                engine.ver = browser.ver = RegExp["$1"];
-                engine.ie = browser.ie = parseFloat(engine.ver);
-            }
-            browser.ie = engine.ie;
-            browser.opera = engine.opera;
-            var p = navigator.platform;
-            system.win = p.indexOf("Win") == 0;
-            system.mac = p.indexOf("Mac") == 0;
-            system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
-
-            if (system.win) {
-                if (/Win(?:dows)?([^do]{2})\s?(\d+\.\d+)?/.test(ua)) {
-                    if (RegExp["$1"] == "NT") {
-                        switch (RegExp["$2"]) {
-                            case "5.0":
-                                system.win = "2000";
-                                break;
-                            case "5.1":
-                                system.win = "XP";
-                                break;
-                            case "6.0":
-                                system.win = "Vista";
-                                break;
-                            case "6.1":
-                                system.win = "7";
-                                break;
-                            default:
-                                system.win = "NT";
-                                break;
-                        }
-                    } else if (RegExp["$1"] == "9x") {
-                        system.win = "ME";
-                    } else {
-                        system.win = RegExp["$1"];
-                    }
-                }
-            }
-
-            system.iphone = ua.indexOf("iPhone") > -1;
-            system.ipod = ua.indexOf("iPod") > -1;
-            system.ipad = ua.indexOf("iPad") > -1;
-            system.nokiaN = ua.indexOf("NokiaN") > -1;
-
-            if (system.win == "CE") {
-                system.windMobile = system.win;
-            } else if (system.win == "Ph") {
-                if (/Windows Phone OS (\d+.\d+)/.test(ua)) {
-                    system.win = "Phone";
-                    system.winMobile = parseFloat(RegExp["$1"]);
-                }
-            }
-            if (system.mac && ua.indexOf("Mobile") > -1) {
-                if (/CPU (?:iPhone )?OS (\d+_\d+)/.test(ua)) {
-                    system.ios = parseFloat(RegExp.$1.replace("_", "."));
-                } else {
-                    system.ios = 2; //can't really detect - so guess
-                }
-            }
-            if (/Android (\d+\.\d+)/.test(ua)) {
-                system.android = parseFloat(RegExp.$1);
-            }
-            system.wii = ua.indexOf("Wii") > -1;
-            system.ps = /playstation/i.test(ua);
-
-            return{
-                engine: engine,
-                browser: browser,
-                system: system
-            };
-        }
-    };
-
     var Util = Airy.Util = {
         s4: function () {
             return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
@@ -414,8 +206,50 @@
         guid: function () {
             return (this.s4() + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() +
                 this.s4() + this.s4());
+        },
+        /**
+         * Random array contains values 1...range
+         */
+        getRandomArray: function (num, range) {
+            var result = [], i = 0;
+            for (; i < num; i++) {
+                result.push(Math.floor(Math.random() * range) + 1);
+            }
+            return result;
+        },
+        isArray: function (value) {
+            return toString.call(value) === "[object Array]";
+        },
+        isFunction: function (value) {
+            return toString.call(value) === "[object Function]";
+        },
+        isRegExp: function (value) {
+            return toString.call(value) === "[object RegExp]";
+        },
+        isNativeJson: function () {
+            return window.JSON && toString.call(JSON) === "[object JSON]";
         }
-    }
+    };
+    /**
+     * DOM Ready
+     * Support IE9, Firefox, Safari, Chrome, Opera
+     */
+    Airy.extend(Airy.prototype, {
+        ready: function (callback) {
+            var completed;
+            if (document.readyState === "complete") {
+                setTimeout(callback, 0);
+            } else {
+                completed = function () {
+                    document.removeEventListener("DOMContentLoaded", completed, false);
+                    window.removeEventListener("load", completed, false);
+                    callback();
+                };
+                document.addEventListener("DOMContentLoaded", completed, false);
+                window.addEventListener("load", completed, false);
+            }
+        }
+    });
 
     return Airy;
 });
