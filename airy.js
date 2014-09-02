@@ -234,7 +234,7 @@
      * DOM Ready
      * Support IE9, Firefox, Safari, Chrome, Opera
      */
-    Airy.extend(Airy.prototype, {
+    Airy.extend(Airy, {
         ready: function (callback) {
             var completed;
             if (document.readyState === "complete") {
