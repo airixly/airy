@@ -207,13 +207,26 @@
             return (this.s4() + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() +
                 this.s4() + this.s4());
         },
-        /**
-         * Random array contains values 1...range
+         /**
+         * Random number begin...end
+         * @param begin
+         * @param end
+         * @returns {Number}
          */
-        getRandomArray: function (num, range) {
+        getRandomNumber: function (begin, end) {
+            return Math.floor(Math.random() * (end - begin + 1)) + begin;
+        },
+        /**
+         * Random array contains values begin...end
+         * @param num
+         * @param begin
+         * @param end
+         * @returns {Array}
+         */
+        getRandomArray: function (num, begin, end) {
             var result = [], i = 0;
             for (; i < num; i++) {
-                result.push(Math.floor(Math.random() * range) + 1);
+                result.push(this.getRandomNumber(begin, end));
             }
             return result;
         },
