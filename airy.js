@@ -207,26 +207,29 @@
             return (this.s4() + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() +
                 this.s4() + this.s4());
         },
-         /**
+                /**
          * Random number begin...end
          * @param begin
          * @param end
+         * @param exp
          * @returns {Number}
          */
-        getRandomNumber: function (begin, end) {
-            return Math.floor(Math.random() * (end - begin + 1)) + begin;
+        getRandomNumber: function (begin, end, exp) {
+            var n = exp ? Math.pow(10, exp) : 1;
+            return Math.floor(Math.random() * (end - begin + 1) * n) / n + begin;
         },
         /**
          * Random array contains values begin...end
          * @param num
          * @param begin
          * @param end
+         * @param exp
          * @returns {Array}
          */
-        getRandomArray: function (num, begin, end) {
+        getRandomArray: function (num, begin, end, exp) {
             var result = [], i = 0;
             for (; i < num; i++) {
-                result.push(this.getRandomNumber(begin, end));
+                result.push(this.getRandomNumber(begin, end, 0));
             }
             return result;
         },
